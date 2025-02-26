@@ -10,10 +10,8 @@ int main() {
     int arr[] = {1, 2, 6, 3, 4, 5, 6};
     int size = sizeof(arr) / sizeof(arr[0]);
     struct ListNode* head = createList(arr, size);
-    printf("Original list:\n");
     printList(head);
     head = removeElements(head, 6);
-    printf("After removing 6:\n");
     printList(head);
     return 0;
 }
