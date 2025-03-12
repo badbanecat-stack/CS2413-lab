@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#define MAX 100
+
+typedef struct {
+    int data[MAX];
+    int front;
+    int rear;
+    int size;
+} Queue;
+
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = 0;
+    q->rear = 0;
+    q->size = 0;
+    return q;
+}
+
+bool isEmptyQueue(Queue* q) {
+    return q->size == 0;
+}
+
+bool isFullQueue(Queue* q) {
+    return q->size == MAX;
+}
+
+void enqueue(Queue* q, int val) {
+    if (!isFullQueue(q)) {
+        q->data[q->rear] = val;
+        q->rear = (q->rear + 1) % MAX;
+        q->size++;
+    }
+}
+
+int dequeue(Queue* q) {
+    if (!isEmptyQueue(q)) {
+        int val = q->data[q->front];
+        q->front = (q->front + 1) % MAX;
+        q->size--;
+        return val;
+    }
+    return -1;
+}
+
+int frontVal(Queue* q) {
+    if (!isEmptyQueue(q)) {
+        return q->data[q->front];
+    }
+    return -1;
+}
+
+typedef struct {
+    Queue* q1;
+    Queue* q2;
+} MyStack;
+
+MyStack* myStackCreate() {
+    MyStack* s = (MyStack*)malloc(sizeof(MyStack));
+    s->q1 = createQueue();
+    s->q2 = createQueue();
+    return s;
+}
+
+void myStackPush(MyStack* obj, int x) {
+    enqueue(obj->q2, x);
+    while (!isEmptyQueue(obj->q1)) {
+        enqueue(obj->q2, dequeue(obj->q1));
+    }
+    Queue* temp = obj->q1;
+    obj->q1 = obj->q2;
+    obj->q2 = temp;
+}
+
+int myStackPop(MyStack* obj) {
+    return dequeue(obj->q1);
+}
+
+int myStackTop(MyStack* obj) {
+    return frontVal(obj->q1);
+}
+
+bool myStackEmpty(MyStack* obj) {
+    return isEmptyQueue(obj->q1);
+}
+
+void myStackFree(MyStack* obj) {
+    free(obj->q1);
+    free(obj->q2);
+    free(obj);
+}
+
+int main() {
+    MyStack* stack = myStackCreate();
+    myStackPush(stack, 10);
+    myStackPush(stack, 20);
+    printf("Top element: %d\n", myStackTop(stack));
+    printf("Popped element: %d\n", myStackPop(stack));
+    printf("Is stack empty? %s\n", myStackEmpty(stack) ? "true" : "false");
+    myStackFree(stack);
+    return 0;
+}
